@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<svg width="200" height="100">
+  <style>
+    text {
+      font-size: 24px;
+      fill: blue;
+    }
+  </style>
+  <text id="content" x="0" y="50">Hello, SVG!</text>
+</svg>
+ <script>
+ 
+const svgElement = document.querySelector('svg'); // select the SVG element
+window.addEventListener('keypress', function(event) {
+	  const textElement = svgElement.getElementById('content');
+	  const key = event.key;
+	  if (key == "Enter") {
+	    textElement.textContent += "\r\n";
+	  } else {
+	    textElement.textContent += key;
+	}
+});
+
+const editableText = svgElement.getElementById('content');
+editableText.addEventListener('click', function(event) {
+  // Get the position of the cursor within the text element
+  const cursorPosition = getCursorPosition(event);
+  
+  // Set the start and end positions of the text selection
+  //editableText.setSelectionRange(0, cursorPosition);
+});
+
+function getCursorPosition(event) {
+  // Get the position of the mouse click relative to the SVG canvas
+  const canvas = event.target.getScreenCTM().inverse();
+  //const point = canvas.transformPoint({x: event.clientX, y: event.clientY});
+  
+  // Get the position of the cursor within the text element
+  let position = 0;
+  for (let i = 0; i < editableText.textContent.length; i++) {
+    const length = editableText.getSubStringLength(0, i);
+    if (length >= event.clientX) {
+      position = i;
+	  console.log(editableText.textContent.substr(0, position - 1));
+      break;
+    }
+  }
+  
+  return position;
+}
+ </script>
+</body>
+</html>
