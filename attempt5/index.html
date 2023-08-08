@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    svg {
+      width: 400px;
+      height: 200px;
+      border: 1px solid #ccc;
+    }
+    #textarea-border {
+      fill: none;
+      stroke: #000;
+      stroke-width: 1px;
+    }
+    #text {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      fill: #000;
+    }
+    #cursor {
+      animation: cursor-blink 1s infinite;
+      
+    }
+    #selection {
+      fill: #cceeff;
+      width: 1px;
+    }
+    @keyframes cursor-blink {
+      0% { opacity: 0.5; }
+      50% { opacity: 0; }
+      100% { opacity: 0.5; }
+    }
+  </style>
+</head>
+<body>
+  <svg id="textarea">
+    <rect id="textarea-border" x="10" y="10" width="380" height="180" />
+    <text id="text" x="20" y="30"></text>
+    <line id="cursor" x1="20" y1="40" x2="20" y2="52" />
+    <rect class="selection" id="selection" x="20" y="20" width="0" height="16" />
+  </svg>
+
+  <script>
+    const textarea = document.getElementById('text');
+    const cursor = document.getElementById('cursor');
+    const selection = document.getElementById('selection');
+    let textValue = '';
+    let selectionStart = 0;
+    let selectionEnd = 0;
+
+    function updateText() {
+      textarea.textContent = textValue;
+    }
+
+    function updateCursor() {
+      const cursorX = 20 + textarea.getComputedTextLength();
+      cursor.setAttribute('x1', cursorX);
+      cursor.setAttribute('x2', cursorX);
+    }
+
+    function updateSelection() {
+      const start = Math.min(selectionStart, selectionEnd);
+      const end = Math.max(selectionStart, selectionEnd);
+      const startX = 20 + textarea.getSubStringLength(0, start);
+      const endX = 20 + textarea.getSubStringLength(0, end);
+      const width = endX - startX;
+      selection.setAttribute('x', startX);
+      selection.setAttribute('y', 20);
+      selection.setAttribute('width', width);
+      selection.setAttribute('height', 16);
+    }
+
+    function handleKeyPress(event) {
+      const key = event.key;
+      if (key.length === 1) {
+        textValue = textValue.slice(0, selectionStart) + key + textValue.slice(selectionEnd);
+        selectionStart++;
+        selectionEnd++;
+        updateText();
+        updateCursor();
+        updateSelection();
+      }
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === 'Backspace') {
+        if (selectionStart === selectionEnd && selectionStart > 0) {
+          textValue = textValue.slice(0, selectionStart - 1) + textValue.slice(selectionEnd);
+          selectionStart--;
+          selectionEnd--;
+        } else if (selectionStart !== selectionEnd) {
+          textValue = textValue.slice(0, selectionStart) + textValue.slice(selectionEnd);
+          selectionEnd = selectionStart;
+        }
+        updateText();
+        updateCursor();
+        updateSelection();
+      } else if (event.key === 'ArrowLeft') {
+        if (selectionStart === selectionEnd && selectionStart > 0) {
+          selectionStart--;
+          selectionEnd--;
+        }
+        updateCursor();
+        updateSelection();
+      } else if (event.key === 'ArrowRight') {
+        if (selectionStart === selectionEnd && selectionStart < textValue.length) {
+          selectionStart++;
+          selectionEnd++;
+        }
+        updateCursor();
+        updateSelection();
+      }
+    }
+
+    document.addEventListener('keypress', handleKeyPress);
+    document.addEventListener('keydown', handleKeyDown);
+  </script>
+</body>
+</html>
