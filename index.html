@@ -33,6 +33,19 @@
         var codeView = SVG('#code-view');
         var keyboard = SVG('#keyboard');
 
+
+        /*
+        this works too
+        
+        var text = codeView.text(function(add) {
+          add.tspan('Lorem ipsum dolor sit amet ').newLine()
+          add.tspan('consectetur').fill('#f06')
+          add.tspan('.')
+          add.tspan('Cras sodales imperdiet auctor.').newLine().dx(20)
+          add.tspan('Nunc ultrices lectus at erat').newLine()
+          add.tspan('dictum pharetra elementum ante').newLine()
+        })
+        */
         codeView.text("");
         const codeViewText = codeView.findOne("text");
 
